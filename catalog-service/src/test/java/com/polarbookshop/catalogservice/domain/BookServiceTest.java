@@ -1,5 +1,6 @@
 package com.polarbookshop.catalogservice.domain;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,8 @@ class BookServiceTest {
     @Test
     void whenBookToCreateAlreadyExistsThenThrows() {
         var bookIsbn = "1234561232";
-        var bookToCreate = new Book(bookIsbn, "Title", "Author", 9.90);
+        var now = Instant.now();
+        var bookToCreate = Book.of(bookIsbn, "Title", "Author", 9.90, now, now);
         when(bookRepository.existsByIsbn(bookIsbn)).thenReturn(true);
         assertThatThrownBy(() -> bookService.addBookToCatalog(bookToCreate))
                 .isInstanceOf(BookAlreadyExistsException.class)

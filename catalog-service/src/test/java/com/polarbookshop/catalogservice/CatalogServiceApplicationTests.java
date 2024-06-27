@@ -5,11 +5,16 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Instant;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SuppressWarnings("null")
+@ActiveProfiles("integration")
 class CatalogServiceApplicationTests {
 
     @Autowired
@@ -17,8 +22,9 @@ class CatalogServiceApplicationTests {
 
     @Test
     void whenGetRequestWithIdThenBookReturned() {
+        var now = Instant.now();
         var bookIsbn = "1231231230";
-        var bookToCreate = new Book(bookIsbn, "Title", "Author", 9.90);
+        var bookToCreate = Book.of(bookIsbn, "Title", "Author", 9.90, now, now);
         Book expectedBook = webTestClient
                 .post()
                 .uri("/books")
@@ -41,7 +47,8 @@ class CatalogServiceApplicationTests {
 
     @Test
     void whenPostRequestThenBookCreated() {
-        var expectedBook = new Book("1231231231", "Title", "Author", 9.90);
+        var now = Instant.now();
+        var expectedBook = Book.of("1231231231", "Title", "Author", 9.90, now, now);
 
         webTestClient
                 .post()
@@ -57,8 +64,9 @@ class CatalogServiceApplicationTests {
 
     @Test
     void whenPutRequestThenBookUpdated() {
+        var now = Instant.now();
         var bookIsbn = "1231231232";
-        var bookToCreate = new Book(bookIsbn, "Title", "Author", 9.90);
+        var bookToCreate = Book.of(bookIsbn, "Title", "Author", 9.90, now, now);
         Book createdBook = webTestClient
                 .post()
                 .uri("/books")
@@ -67,7 +75,7 @@ class CatalogServiceApplicationTests {
                 .expectStatus().isCreated()
                 .expectBody(Book.class).value(book -> assertThat(book).isNotNull())
                 .returnResult().getResponseBody();
-        var bookToUpdate = new Book(createdBook.isbn(), createdBook.title(), createdBook.author(), 7.95);
+        var bookToUpdate = Book.of(createdBook.isbn(), createdBook.title(), createdBook.author(), 7.95, now, now);
 
         webTestClient
                 .put()
@@ -83,8 +91,9 @@ class CatalogServiceApplicationTests {
 
     @Test
     void whenDeleteRequestThenBookDeleted() {
+        var now = Instant.now();
         var bookIsbn = "1231231233";
-        var bookToCreate = new Book(bookIsbn, "Title", "Author", 9.90);
+        var bookToCreate = Book.of(bookIsbn, "Title", "Author", 9.90, now, now);
         webTestClient
                 .post()
                 .uri("/books")
