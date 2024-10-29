@@ -1,2 +1,3 @@
 polar:
   greeting: "Welcom to catalog from the config server"
+  test: "test value"
